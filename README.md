@@ -12,7 +12,7 @@ here: https://divvy-tripdata.s3.amazonaws.com/index.html
 
 3. Process 
 In this phase using RStudio because it's a large dataset 
-A full description of the process is described here: Capstone_Project_Bikecase.Rmd
+A full description of the process is described here: (https://github.com/grislyhub/Case-Study-Cyclistic-divvy-bike/blob/f97b555874724c078c9256615e86705f5c74df49/Capstone_Project_Bikecase.Rmd)
 
 4. Analyze 
 In this phase, I use summary() function in R to conduct descriptive analysis
