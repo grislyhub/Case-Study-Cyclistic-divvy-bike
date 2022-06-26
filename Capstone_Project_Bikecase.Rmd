@@ -1,0 +1,142 @@
+---
+title: "Capstone_Project_bikecase"
+author: "Posatron"
+output: html_document
+date: '2022-06-04'
+---
+
+## Call the library you need for this job.
+```{r}
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(skimr)
+library(readr)
+library(ggplot2)
+```
+
+## Import data file and rename them with simple name.
+```{r Import and rename}
+trips_2008 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202008-divvy-tripdata/202008-divvy-tripdata.csv")
+trips_2009 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202009-divvy-tripdata/202009-divvy-tripdata.csv")
+trips_2010 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202010-divvy-tripdata/202010-divvy-tripdata.csv")
+trips_2011 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202011-divvy-tripdata/202011-divvy-tripdata.csv")
+trips_2012 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202012-divvy-tripdata/202012-divvy-tripdata.csv")
+trips_2101 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202101-divvy-tripdata/202101-divvy-tripdata.csv")
+trips_2102 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202102-divvy-tripdata/202102-divvy-tripdata.csv")
+trips_2103 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202103-divvy-tripdata/202103-divvy-tripdata.csv")
+trips_2104 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202104-divvy-tripdata/202104-divvy-tripdata.csv")
+trips_2105 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202105-divvy-tripdata/202105-divvy-tripdata.csv")
+trips_2106 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202106-divvy-tripdata/202106-divvy-tripdata.csv")
+trips_2107 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202107-divvy-tripdata/202107-divvy-tripdata.csv")
+trips_2108 <- read_csv("E:/Data Analysts/Case Study/Project_Bike_Case/202108-divvy-tripdata/202108-divvy-tripdata.csv")
+
+```
+
+## Check the column names.
+Before merging individual files into one integrated file, Look at the elements of the individual table. This is essential part of the data cleaning process.
+
+```{r Check the colomn names}
+colnames(trips_2008)
+```
+## Take a look at the data table
+
+```{r Look at the data table}
+View(trips_2008)
+```
+
+## Check the column names and the data format of each column.
+```{r Column names and the data Format}
+str(trips_2008)
+```
+
+## Compare Different column 1.
+
+As you see from the result below, We can see that column end_station_id and column start_station_id have a different data format in several column. From August to November of 2020, it is integer, and after December the format is change to character.
+Integration is possible only when those are changed to the same data format.
+```{r Compare_df_cols}
+compare_df_cols(trips_2008, trips_2009, trips_2010, trips_2011, trips_2012, trips_2101, trips_2102, trips_2103, trips_2104, trips_2105, trips_2106, trips_2107, trips_2108)
+
+```
+## Change the integer data format to character.
+The target columns are the end station id and start station id columns from August to November.
+```{r change the data format}
+trips_2008 <- mutate(trips_2008, end_station_id = as.character(end_station_id), start_station_id = as.character(start_station_id))
+trips_2009 <- mutate(trips_2009, end_station_id = as.character(end_station_id),
+start_station_id = as.character(start_station_id))
+trips_2010 <- mutate(trips_2010, end_station_id = as.character(end_station_id), start_station_id = as.character(start_station_id))
+trips_2011 <- mutate(trips_2011, end_station_id = as.character(end_station_id), start_station_id = as.character(start_station_id))
+```
+
+## Compare Different column 2.
+Use return = "mismatch" to see if result 0_rows that means there is no mismatch data format anymore.
+```{r}
+compare_df_cols(trips_2008, trips_2009, trips_2010, trips_2011, trips_2012, trips_2101, trips_2102, trips_2103, trips_2104, trips_2105, trips_2106, trips_2107, trips_2108, return = "mismatch")
+```
+## Now combine the tables into one integrate file.
+Lets integrate several tables into one integrate file.
+```{r combine into one file.}
+trips_2008_2108 <- bind_rows(trips_2008, trips_2009, trips_2010, trips_2011, trips_2012, trips_2101, trips_2102, trips_2103, trips_2104, trips_2105, trips_2106, trips_2107, trips_2108)
+```
+## Let check the integrated file.
+```{r}
+View(trips_2008_2108)
+```
+## Let check data format again before go to analyst phase.
+Becareful data and time if its the POSIXct or POSIXlt format, it is done properly 
+```{r}
+str(trips_2008_2108)
+```
+
+## Check the total number of row and columns.
+The first is number of row and latter is the number of columns.
+```{r}
+dim(trips_2008_2108)
+```
+## Touch the outline with the summary function.
+```{r}
+summary(trips_2008_2108)
+```
+## Create new columns such as month, date, and day of the week for analysis.
+```{r Create columns as month, day, and the day of the week}
+trips_2008_2108$date <- as.Date(trips_2008_2108$started_at)
+trips_2008_2108$month <- format(as.Date(trips_2008_2108$date), "%m")
+trips_2008_2108$day <- format(as.Date(trips_2008_2108$date), "%d")
+trips_2008_2108$year <- format(as.Date(trips_2008_2108$date), "%Y")
+trips_2008_2108$day_of_week <- format(as.Date(trips_2008_2108$date), "%A")
+
+```
+## Find the lenght of each trip.
+```{r}
+trips_2008_2108$ride_length <- difftime(trips_2008_2108$ended_at, trips_2008_2108$started_at)
+```
+## Check the current work status.
+```{r pressure, ECHO=FALSE}
+View(trips_2008_2108)
+str(trips_2008_2108)
+
+```
+## Lets change the data format of ride_lenght to "numeric"
+
+```{r}
+trips_2008_2108$ride_length <- as.numeric(as.character(trips_2008_2108$ride_length))
+```
+## Remove unnecessary values.
+For example, values whose ride_length is less than zero. 
+And attach a version number to distinguish it. Add version 1.
+```{r Remove unnecessary values}
+trips_2008_2108_V1 <- trips_2008_2108[!(trips_2008_2108$ride_length<0),]
+
+```
+## Final inspection.
+```{r pressure, echo=FALSE}
+summary(trips_2008_2108_V1)
+summary(trips_2008_2108_V1$ride_length)
+
+```
+## File Extraction 
+Lets take this extracted file, you can analyze in the various way to share your project in Tableau
+```{r}
+write.csv(trips_2008_2108_V1, "trips_2008_2108.csv")
+```
+
