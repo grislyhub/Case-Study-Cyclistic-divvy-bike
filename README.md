@@ -19,7 +19,6 @@ In this phase, I use summary() function in R to conduct descriptive analysis
 
 5. Share 
 In this phase, I choose Tableau to visualize and share.
-Published here............................................
 
 6. Act 
 Present and determine the best way to share that presentation. 
